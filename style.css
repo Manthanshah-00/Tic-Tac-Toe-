@@ -1,0 +1,193 @@
+/* ══════ Reset ══════ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --black:      #050505;
+  --dark:       #0a0a0a;
+  --neon:       #00f0ff;
+  --neon-dim:   rgba(0,240,255,.25);
+  --neon-glow:  rgba(0,240,255,.45);
+  --accent:     #ff2d95;
+  --accent-dim: rgba(255,45,149,.2);
+  --glass-bg:   rgba(255,255,255,.03);
+  --glass-border: rgba(0,240,255,.12);
+  --blur:       26px;
+  --radius:     24px;
+}
+
+/* ══════ Body ══════ */
+body {
+  min-height: 100vh; display: flex; justify-content: center; align-items: center;
+  font-family: 'Inter', system-ui, sans-serif; color: #fff; overflow: hidden;
+  background: var(--black);
+}
+
+/* ══════ Ambient Orbs ══════ */
+.ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+.orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(120px); opacity: .35;
+  animation: drift 22s ease-in-out infinite alternate;
+}
+.orb-1 { width: 500px; height: 500px; background: var(--neon);
+         top: -18%; left: -12%; }
+.orb-2 { width: 420px; height: 420px; background: var(--accent);
+         bottom: -20%; right: -10%; animation-delay: -6s; }
+.orb-3 { width: 340px; height: 340px; background: #7b2dff;
+         top: 55%; left: 58%; animation-delay: -12s; opacity: .2; }
+.orb-4 { width: 260px; height: 260px; background: var(--neon);
+         top: 8%; right: 15%; opacity: .15; animation-delay: -16s; }
+
+@keyframes drift {
+  0%   { transform: translate(0,0) scale(1) rotate(0deg); }
+  50%  { transform: translate(50px,-30px) scale(1.1) rotate(6deg); }
+  100% { transform: translate(-40px,40px) scale(.9) rotate(-4deg); }
+}
+
+/* ══════ Specular Light Sweep ══════ */
+.light-sweep {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: conic-gradient(from 180deg at 50% 40%,
+    transparent 0deg, rgba(0,240,255,.03) 80deg,
+    transparent 160deg, rgba(255,45,149,.02) 260deg, transparent 360deg);
+  animation: rotate-light 35s linear infinite;
+}
+@keyframes rotate-light { to { transform: rotate(360deg); } }
+
+/* ══════ Glass Panel ══════ */
+.glass-panel {
+  position: relative; z-index: 1;
+  max-width: 420px; width: 92vw;
+  padding: 40px 38px 46px; text-align: center;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--blur)) saturate(1.4);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(1.4);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow:
+    0 0 40px rgba(0,240,255,.06),
+    0 8px 60px rgba(0,0,0,.7),
+    inset 0 1px 0 rgba(0,240,255,.1),
+    inset 0 -1px 0 rgba(255,255,255,.03);
+  overflow: hidden;
+}
+
+/* ── Prismatic edge ── */
+.prism-edge {
+  position: absolute; inset: -1px; border-radius: inherit; z-index: -1;
+  pointer-events: none;
+  background: conic-gradient(from 0deg at 50% 50%,
+    var(--neon), var(--accent), #7b2dff, var(--neon));
+  opacity: .1;
+  animation: prism-spin 14s linear infinite;
+}
+@keyframes prism-spin { to { transform: rotate(360deg); } }
+
+/* ══════ Title ══════ */
+.title {
+  font-size: 1.9rem; font-weight: 800; letter-spacing: 2px;
+  margin-bottom: 18px;
+  color: var(--neon);
+  text-shadow: 0 0 12px var(--neon-glow), 0 0 40px rgba(0,240,255,.15);
+}
+
+/* ══════ Scoreboard ══════ */
+.scoreboard { display: flex; justify-content: center; gap: 12px; margin-bottom: 14px; }
+
+.score-pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 18px; border-radius: 50px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.06);
+  backdrop-filter: blur(10px);
+  transition: transform .2s, box-shadow .3s;
+}
+.score-pill:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 14px var(--neon-dim);
+}
+.pill-icon { font-size: 1rem; }
+.pill-val  { font-size: 1.15rem; font-weight: 700; }
+
+.x-pill .pill-icon { color: var(--neon); text-shadow: 0 0 8px var(--neon-glow); }
+.o-pill .pill-icon { color: var(--accent); text-shadow: 0 0 8px var(--accent-dim); }
+.draw-pill .pill-icon { color: #555; }
+
+/* ══════ Status ══════ */
+.status {
+  font-size: 1rem; font-weight: 400; opacity: .85;
+  margin-bottom: 18px; min-height: 24px; transition: opacity .3s;
+}
+.x-mark { color: var(--neon); font-weight: 600; text-shadow: 0 0 6px var(--neon-glow); }
+.o-mark { color: var(--accent); font-weight: 600; text-shadow: 0 0 6px var(--accent-dim); }
+
+/* ══════ Board ══════ */
+.board {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 10px; max-width: 294px; margin: 0 auto 26px;
+}
+
+.cell {
+  aspect-ratio: 1; position: relative;
+  border-radius: 18px; cursor: pointer;
+  background: rgba(255,255,255,.025);
+  border: 1px solid rgba(0,240,255,.08);
+  backdrop-filter: blur(6px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 2px 10px rgba(0,0,0,.4);
+  display: flex; justify-content: center; align-items: center;
+  font-size: 2.2rem; font-weight: 800;
+  transition: transform .2s, background .25s, box-shadow .3s, border-color .3s;
+  user-select: none; overflow: hidden;
+}
+
+.cell::before {
+  content: ''; position: absolute; inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.cell:hover {
+  background: rgba(0,240,255,.06);
+  border-color: rgba(0,240,255,.2);
+  transform: scale(1.07);
+  box-shadow:
+    0 0 18px rgba(0,240,255,.12),
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 4px 20px rgba(0,0,0,.4);
+}
+
+.cell.x {
+  color: var(--neon);
+  text-shadow: 0 0 16px var(--neon-glow), 0 0 40px rgba(0,240,255,.2);
+}
+.cell.o {
+  color: var(--accent);
+  text-shadow: 0 0 16px rgba(255,45,149,.5), 0 0 40px rgba(255,45,149,.15);
+}
+
+/* Win state */
+.cell.win {
+  animation: neon-pop .5s ease;
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  box-shadow:
+    0 0 28px rgba(255,45,149,.5),
+    0 0 60px rgba(255,45,149,.15),
+    inset 0 0 20px rgba(255,45,149,.1);
+}
+@keyframes neon-pop {
+  0%  { transform: scale(1); }
+  40% { transform: scale(1.18) rotate(2deg); }
+  100%{ transform: scale(1); }
+}
+
+/* ══════ Button ══════ */
+.btn-glass {
+  font-family: inherit; font-size: .9rem; font-weight: 600;
+  letter-spacing: 1px; padding: 12px 38px;
+  border: 1px solid rgba(0,240,255,.2);
+  border-radius: 50px; cursor
